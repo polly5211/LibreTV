@@ -5,10 +5,9 @@ const SEARCH_HISTORY_KEY = 'videoSearchHistory';
 const MAX_HISTORY_ITEMS = 5;
 
 // 密码保护配置
-// 注意：PASSWORD 环境变量是必需的，所有部署都必须设置密码以确保安全
 const PASSWORD_CONFIG = {
     localStorageKey: 'passwordVerified',  // 存储验证状态的键名
-    verificationTTL: 90 * 24 * 60 * 60 * 1000  // 验证有效期（90天，约3个月）
+    verificationTTL: 90 * 24 * 60 * 60 * 1000,  // 验证有效期（90天，约3个月）
 };
 
 // 网站信息配置
@@ -16,7 +15,7 @@ const SITE_CONFIG = {
     name: 'LibreTV',
     url: 'https://libretv.is-an.org',
     description: '免费在线视频搜索与观看平台',
-    logo: 'image/logo.png',
+    logo: 'https://images.icon-icons.com/38/PNG/512/retrotv_5520.png',
     version: '1.0.3'
 };
 
@@ -137,16 +136,6 @@ const API_SITES = {
     },
 };
 
-// 定义合并方法
-function extendAPISites(newSites) {
-    Object.assign(API_SITES, newSites);
-}
-
-// 暴露到全局
-window.API_SITES = API_SITES;
-window.extendAPISites = extendAPISites;
-
-
 // 添加聚合搜索的配置选项
 const AGGREGATED_SEARCH_CONFIG = {
     enabled: true,             // 是否启用聚合搜索
@@ -159,18 +148,16 @@ const AGGREGATED_SEARCH_CONFIG = {
 // 抽象API请求配置
 const API_CONFIG = {
     search: {
-        // 只拼接参数部分，不再包含 /api.php/provide/vod/
-        path: '?ac=videolist&wd=',
-        pagePath: '?ac=videolist&wd={query}&pg={page}',
-        maxPages: 50, // 最大获取页数
+    	// 修改搜索接口为返回更多详细数据（包括视频封面、简介和播放列表）
+        path: '/api.php/provide/vod/?ac=videolist&wd=',
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
             'Accept': 'application/json'
         }
     },
     detail: {
-        // 只拼接参数部分
-        path: '?ac=videolist&ids=',
+    	// 修改详情接口也使用videolist接口，但是通过ID查询，减少请求次数
+        path: '/api.php/provide/vod/?ac=videolist&ids=',
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
             'Accept': 'application/json'
@@ -226,5 +213,5 @@ const CUSTOM_API_CONFIG = {
     adultPropName: 'isAdult' // 用于标记成人内容的属性名
 };
 
-// 隐藏内置黄色采集站API的变量
-const HIDE_BUILTIN_ADULT_APIS = false;
+// 新增隐藏内置黄色采集站API的变量，默认为true
+const HIDE_BUILTIN_ADULT_APIS = true;
